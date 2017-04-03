@@ -2,6 +2,7 @@ setup_evd_stuff.sh
 .DS_Store
 *.C
 *.txt
+*.pdf
 *.o
 *Cint.h
 *Cint.cxx

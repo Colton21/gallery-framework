@@ -48,19 +48,18 @@ bool optFilter::analyze(gallery::Event * ev) {
 	art::InputTag tracks_tag(_track_producer);
 	art::InputTag showers_tag(_shower_producer);
 	art::InputTag flash_tag(_flash_producer);
+	double pe_threshold(_pe_threshold);
 
 	auto const & opf = ev->getValidHandle<std::vector < recob::OpFlash> >(flash_tag);
 	auto const & opflashes(*opf);
 
-	const int num_flashes = opflashes.size();
 	total_flash_counter++;
 
-	for(int this_flash = 0; this_flash < num_flashes; this_flash++)
+	for(auto opflsh : opflashes)
 	{
-		auto const opflsh = opflashes.at(this_flash);
 		if(opflsh.Time() >= 3 && opflsh.Time() <= 5)
 		{
-			if(opflsh.TotalPE() >= 50)
+			if(opflsh.TotalPE() >= pe_threshold)
 			{
 				flash_pass_counter++;
 				return true;

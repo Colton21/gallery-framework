@@ -3,8 +3,8 @@
 #
 
 # specific names for this package
-DICT  = gallery_framework_exampleCint
-SHLIB = libgallery_framework_example.so
+DICT  = gallery_framework_cosmic_anaCint
+SHLIB = libgallery_framework_cosmic_ana.so
 SOURCES = $(filter-out $(DICT).cxx, $(wildcard *.cxx))
 FMWK_HEADERS = LinkDef.h $(DICT).h
 HEADERS = $(filter-out $(FMWK_HEADERS), $(wildcard *.h))

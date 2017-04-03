@@ -64,6 +64,9 @@ void setShowerProducer(std::string s) {
 void setFlashProducer(std::string s) {
 	_flash_producer = s;
 }
+void setPEThreshold(double threshold){
+	_pe_threshold = threshold;
+}
 void setVerbose(bool b){
 	_verbose = b;
 }
@@ -73,6 +76,7 @@ protected:
 std::string _track_producer;
 std::string _shower_producer;
 std::string _flash_producer;
+double _pe_threshold;
 
 double x_boundary1;
 double x_boundary2;

@@ -27,6 +27,7 @@
 #include "canvas/Persistency/Common/FindMany.h"
 
 #include "Analysis/ana_base.h"
+#include "histo_manager.h"
 
 #include "lardataobj/RecoBase/Track.h"
 #include "lardataobj/RecoBase/Shower.h"
@@ -47,6 +48,7 @@ namespace galleryfmwk {
 class cosmic_ana : galleryfmwk::ana_base {
 
 geoalgo::GeoAlgo const _geo_algo_instance;
+h_manager _h_manager_instance;
 
 public:
 
@@ -110,10 +112,10 @@ void fiducial_volume_z_back(double back){
 void fiducial_volume_z_front(double front){
 	_front = front;
 }
-void pfp_producer(std::string s){
+void setPfpProducer(std::string s){
 	_pfp_tag = s;
 }
-void pfp_cosmic_producer(std::string s){
+void setPfpCosmicProducer(std::string s){
 	_pfp_cosmic_tag = s;
 }
 

@@ -11,6 +11,7 @@
 
 #pragma link C++ class galleryfmwk::example_ana+;
 #pragma link C++ class galleryfmwk::opFilter+;
+#pragma link C++ class galleryfmwk::comsic_ana+;
 //ADD_NEW_CLASS ... do not change this line
 #endif
 

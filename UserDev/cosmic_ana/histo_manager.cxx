@@ -1,8 +1,13 @@
 #include "histo_manager.h"
 
 
-void histogram::gen_histograms() {
+void h_manager::gen_histograms(TDirectory * dir) {
 //max fv cut for plotting (in cm)
+
+	std::cout << "Generating Histograms" << std::endl;
+
+	TH1::AddDirectory(kFALSE);
+
 	h_nue_fv_cuts = new TH1D("h_nue_fv_cuts", "h_nue_fv_cuts", 50, 0, 50);
 	h_nue_fv_top_cuts = new TH1D("h_nue_fv_top_cuts", "h_nue_fv_top_cuts", 50, 0, 50);
 	h_numu_fv_cuts = new TH1D("h_numu_fv_cuts", "h_numu_fv_cuts", 50, 0, 50);
@@ -66,7 +71,7 @@ void histogram::gen_histograms() {
 	h_shwr_direction_cut_zy = new TH2D("h_shwr_direction_cut_zy", "h_shwr_direction_cut_zy", 100, -1, 1, 100, -1, 1);
 	h_shwr_direction_y_vs_nearest_cosmic = new TH2D("h_shwr_direction_y_vs_nearest_cosmic", "h_shwr_direction_y_vs_nearest_cosmic", 30, 0, 120, 30, -1, 1);
 	h_shwr_theta_phi = new TH2D("h_shwr_theta_phi", "h_shwr_theta_phi", 60, -100, 100, 60, -190, 190);
-	h_shwr_cut_theta_phi = new TH2D("h_shwr_theta_phi", "h_shwr_theta_phi", 60, -100, 100, 60, -190, 190);
+	h_shwr_cut_theta_phi = new TH2D("h_shwr_cut_theta_phi", "h_shwr_cut_theta_phi", 60, -100, 100, 60, -190, 190);
 
 	h_shwr_length = new TH1D ("h_shwr_length", "h_shwr_length", 50, 0, 50);
 	h_shwr_end_width = new TH1D ("h_shwr_end_width", "h_shwr_end_width", 50, 0, 50);
@@ -127,11 +132,16 @@ void histogram::gen_histograms() {
 	c28b = new TCanvas();
 	c28c = new TCanvas();
 
+	h_numu_like_vtx_xy->Fill(1, 1);
+
+	std::cout << "Finished Generating Histograms" << std::endl;
+
 }
 
-void histogram::draw_save()
+void h_manager::draw_save()
 {
 
+	std::cout << "Start Saving Histograms" << std::endl;
 
 	c1->cd();
 	h_nue_like_daughters->Draw("colz");
@@ -412,7 +422,7 @@ void histogram::draw_save()
 
 	c28a->cd();
 	h_shwr_open_angle->Draw();
-	h_shwr_open_angle->GetYaxis()->SetTilte("Events");
+	h_shwr_open_angle->GetYaxis()->SetTitle("Events");
 	h_shwr_open_angle->GetXaxis()->SetTitle("Opening Angle [Degrees]");
 	c28a->Print("nue-like_shwr_open_angle.pdf");
 	c28b->cd();
@@ -426,5 +436,7 @@ void histogram::draw_save()
 	h_shwr_end_width->GetXaxis()->SetTitle("Shower End Width [cm]");
 	c28c->Print("nue-like_shwr_end_width.pdf");
 
+
+	std::cout << "Finished Saving Histograms" << std::endl;
 
 }
