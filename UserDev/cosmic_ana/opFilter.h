@@ -12,8 +12,8 @@
 
     @{*/
 
-#ifndef GALLERY_FMWK_OPFILTER_H
-#define GALLERY_FMWK_OPFILTER_H
+#ifndef GALLERY_FMWK_OPTFILTER_H
+#define GALLERY_FMWK_OPTFILTER_H
 
 #include "canvas/Utilities/InputTag.h"
 #include "gallery/Event.h"
@@ -33,12 +33,12 @@ namespace galleryfmwk {
    \class example_ana
    User custom analysis class made by SHELL_USER_NAME
  */
-class opFilter : galleryfmwk::ana_base {
+class optFilter : galleryfmwk::ana_base {
 
 public:
 
 /// Default constructor
-opFilter() {
+optFilter() {
 	_verbose = false;
 }
 

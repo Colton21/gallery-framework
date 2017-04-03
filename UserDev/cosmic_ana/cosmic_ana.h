@@ -52,6 +52,15 @@ public:
 
 bool inFV(double x_vtx, double y_vtx, double z_vtx,
           double x1, double x2, double y1, double y2, double z1, double z2);
+double cylinder_fid_vol(
+        std::vector < geoalgo::Trajectory_t > cosmic_track_trajectory_list,
+        std::vector < double > cosmic_track_length_list,
+        geoalgo::GeoAlgo const _geo_algo_instance,
+        geoalgo::Point_t shwr_vertex,
+        double cut_distance_to_point
+        );
+double geo_distance(const double x1, const double x2, const double y1, const double y2, const double z1, const double z2) const;
+double calc_end_width(const double length, const double open_angle) const;
 
 /// Default constructor
 cosmic_ana() {
@@ -59,7 +68,7 @@ cosmic_ana() {
 }
 
 /// Default destructor
-// ~cosmic_ana() {}
+// ~example_ana() {}
 
 
 bool initialize();
@@ -101,13 +110,20 @@ void fiducial_volume_z_back(double back){
 void fiducial_volume_z_front(double front){
 	_front = front;
 }
+void pfp_producer(std::string s){
+	_pfp_tag = s;
+}
+void pfp_cosmic_producer(std::string s){
+	_pfp_cosmic_tag = s;
+}
 
 protected:
 
 bool _verbose;
 std::string _track_producer;
 std::string _shower_producer;
-std::string _pfp_producer;
+std::string _pfp_tag;
+std::string _pfp_cosmic_tag;
 double _cut;
 double _right;
 double _left;
@@ -135,123 +151,6 @@ double fromWall;
 
 double fv_cut_max;
 double ub_total_vol;
-
-TH1D * h_nue_fv_cuts;
-TH1D * h_nue_fv_top_cuts;
-TH1D * h_numu_fv_cuts;
-TH2D * h_nue_like_daughters;
-TH2D * h_nue_like_daughters_cuts;
-TH2D * h_nue_like_daughters_cuts_logz;
-TH2D * h_nue_like_daughters_logz;
-TH1D * h_nue_like_trk_daughters;
-TH2D * h_numu_like_daughters;
-
-TH2D * h_nue_like_shwr_daughters_xy;
-TH2D * h_nue_like_shwr_daughters_yz;
-TH2D * h_nue_like_trk_daughters_xy;
-TH2D * h_nue_like_trk_daughters_yz;
-TH2D * h_nue_like_vtx_xy;
-TH2D * h_nue_like_vtx_yz;
-
-TH2D * h_nue_like_shwr_lrgDist_vtx_xy;
-TH2D * h_nue_like_shwr_lrgDist_vtx_zy;
-TH1D * h_nue_like_shwr_lrgDist_dist_to_track;
-TH1D * h_nue_like_shwr_lrgDist_num_trks;
-TH1D * h_nue_like_shwr_lrgDist_dist_to_cosmic;
-
-TH2D * h_numu_like_shwr_daughters_xy;
-TH2D * h_numu_like_shwr_daughters_yz;
-TH2D * h_numu_like_trk_daughters_xy;
-TH2D * h_numu_like_trk_daughters_yz;
-TH2D * h_numu_like_vtx_xy;
-TH2D * h_numu_like_vtx_yz;
-
-TH1D * h_nue_cosmic_closest;
-TH1D * h_nue_shwr_cosmic_closest;
-TH1D * h_nue_shwr_vtx_dist;
-
-TH1D * h_nue_shwr_E;
-TH2D * h_nue_shwr_cosmic_closest_vs_E;
-TH2D * h_nue_shwr_cosmic_closest_vs_y;
-TH2D * h_nue_shwr_cosmic_closest_vs_E_zoom;
-TH2D * h_nue_shwr_cosmic_closest_vs_y_zoom;
-
-TH1D * h_cosmic_trk_length;
-TH1D * h_nue_trk_length;
-
-TH1D * h_nue_trk_closest;
-TH1D * h_nue_trk_closest_zoom;
-TH1D * h_nue_shwr_trk_closest;
-
-TH1D * h_num_trks_nearby;
-
-TH2D * h_nue_shwr_cut_vtx_xy;
-TH2D * h_nue_shwr_cut_vtx_zy;
-
-TH1D * h_num_nue_per_event;
-
-TH1D * h_cylinder_vol;
-
-TH2D * h_shwr_direction_xy;
-TH2D * h_shwr_direction_zy;
-TH2D * h_shwr_direction_cut_xy;
-TH2D * h_shwr_direction_cut_zy;
-TH2D * h_shwr_theta_phi;
-TH2D * h_shwr_cut_theta_phi;
-
-TH2D * h_shwr_direction_y_vs_nearest_cosmic;
-
-TCanvas * c1;
-TCanvas * c1b;
-TCanvas * c1c;
-TCanvas * c1d;
-TCanvas * c1e;
-TCanvas * c2;
-TCanvas * c3;
-TCanvas * c3b;
-TCanvas * c4;
-TCanvas * c5;
-TCanvas * c6;
-TCanvas * c7;
-TCanvas * c8;
-TCanvas * c9;
-TCanvas * c10;
-TCanvas * c11;
-TCanvas * c12;
-TCanvas * c13;
-TCanvas * c14;
-TCanvas * c15;
-TCanvas * c16;
-TCanvas * c17;
-TCanvas * c17b;
-TCanvas * c18;
-TCanvas * c19;
-TCanvas * c19b;
-TCanvas * c19c;
-TCanvas * c19d;
-TCanvas * c19e;
-TCanvas * c20a;
-TCanvas * c20b;
-TCanvas * c21a;
-TCanvas * c21b;
-TCanvas * c21c;
-TCanvas * c22;
-TCanvas * c23a;
-TCanvas * c23b;
-TCanvas * c24;
-TCanvas * c25a;
-TCanvas * c25b;
-TCanvas * c25c;
-TCanvas * c25d;
-TCanvas * c25e;
-TCanvas * c26;
-TCanvas * c27a;
-TCanvas * c27b;
-TCanvas * c27c;
-TCanvas * c27d;
-TCanvas * c27e;
-TCanvas * c27f;
-TCanvas * c27g;
 
 };
 

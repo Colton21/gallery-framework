@@ -40,6 +40,7 @@ setup_evd_stuff.sh
 !/UserDev/UBRawFileReader
 !/UserDev/cosmic_ana
 !/UserDev/numi_ophit
+!/UserDev/UBXSec
 /UserDev/SelectionTool/OpT0Finder/OpTrackAlg/data/uboone_photon_library_v4.root
 /UserDev/SelectionTool/OpT0Finder/OpTrackAlg/data/*
 /UserDev/SelectionTool/OpT0Finder/OpTrackAlg

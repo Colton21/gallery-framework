@@ -36,21 +36,8 @@ def process_file(_file):
     opFilterModule.setTrigAlgProducer("EXT_NUMIwin_FEMBeamTriggerAlgo")
     opFilterModule.setVerbose(False)
 
-    exampleModule = galleryfmwk.example_ana()
-    exampleModule.setTrackProducer("pandoraNuKHit")
-    exampleModule.setShowerProducer("showerrecopandora")
-    exampleModule.setNearestCutDist(5)
-    exampleModule.fiducial_volume_x_right(0)
-    exampleModule.fiducial_volume_x_left(0)
-    exampleModule.fiducial_volume_y_up(0)
-    exampleModule.fiducial_volume_y_down(0)
-    exampleModule.fiducial_volume_z_back(0)
-    exampleModule.fiducial_volume_z_front(0)
-    exampleModule.setVerbose(False)
-
     # Attach an analysis unit ... here we use a base class which do
     my_proc.add_process(opFilterModule)
-    # my_proc.add_process(exampleModule)
 
     my_proc.run()
 

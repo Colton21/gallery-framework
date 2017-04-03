@@ -25,30 +25,30 @@ def process_file(_file):
     ROOT.gROOT.SetBatch(1)
 
     # Specify output root file name
-    my_proc.set_ana_output_file(_file.replace('.root', '') + "_ana.root")
+    #my_proc.set_ana_output_file(_file.replace('.root', '') + "_ana.root")
     # my_proc.set_output_file("")
 
-    opFilterModule = galleryfmwk.opFilter()
-    opFilterModule.setTrackProducer("pandoraNuKHit")
-    opFilterModule.setShowerProducer("showerrecopandora")
-    opFilterModule.setFlashProducer("simpleFlashBeam")
-    opFilterModule.setVerbose(False)
+    # opFilterModule = galleryfmwk.optFilter()
+    # opFilterModule.setTrackProducer("pandoraNuKHit")
+    # opFilterModule.setShowerProducer("showerrecopandora")
+    # opFilterModule.setFlashProducer("simpleFlashBeam")
+    # opFilterModule.setVerbose(False)
 
-    cosmicanaModule = galleryfmwk.example_ana()
-    cosmicanaModule.setTrackProducer("pandoraNuKHit")
-    cosmicanaModule.setShowerProducer("showerrecopandora")
-    cosmicanaModule.setNearestCutDist(5)
-    cosmicanaModule.fiducial_volume_x_right(0)
-    cosmicanaModule.fiducial_volume_x_left(0)
-    cosmicanaModule.fiducial_volume_y_up(0)
-    cosmicanaModule.fiducial_volume_y_down(0)
-    cosmicanaModule.fiducial_volume_z_back(0)
-    cosmicanaModule.fiducial_volume_z_front(0)
-    cosmicanaModule.setVerbose(False)
+    # cosmicanaModule = galleryfmwk.cosmic_ana()
+    # cosmicanaModule.setTrackProducer("pandoraNuKHit")
+    # cosmicanaModule.setShowerProducer("showerrecopandora")
+    # cosmicanaModule.setNearestCutDist(5)
+    # cosmicanaModule.fiducial_volume_x_right(0)
+    # cosmicanaModule.fiducial_volume_x_left(0)
+    # cosmicanaModule.fiducial_volume_y_up(0)
+    # cosmicanaModule.fiducial_volume_y_down(0)
+    # cosmicanaModule.fiducial_volume_z_back(0)
+    # cosmicanaModule.fiducial_volume_z_front(0)
+    # cosmicanaModule.setVerbose(False)
 
     # Attach an analysis unit ... here we use a base class which do
     # my_proc.add_process(opFilterModule)
-    my_proc.add_process(exampleModule)
+    # my_proc.add_process(cosmicanaModule)
 
     my_proc.run()
 

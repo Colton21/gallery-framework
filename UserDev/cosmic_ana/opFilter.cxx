@@ -5,7 +5,7 @@
 
 namespace galleryfmwk {
 
-bool opFilter::initialize() {
+bool optFilter::initialize() {
 
 	//
 	// This function is called in the beggining of event loop
@@ -33,7 +33,7 @@ bool opFilter::initialize() {
 }
 
 
-bool opFilter::analyze(gallery::Event * ev) {
+bool optFilter::analyze(gallery::Event * ev) {
 
 	//num_cosmic++;
 
@@ -74,7 +74,7 @@ bool opFilter::analyze(gallery::Event * ev) {
 
 //for timing: marco does 3-5 us window, and total PE over all opdets >= 50 PE
 
-bool opFilter::finalize() {
+bool optFilter::finalize() {
 
 	// If you need, you can store your ROOT class instance in the output
 	// file. You have an access to the output file through "_fout" pointer.
