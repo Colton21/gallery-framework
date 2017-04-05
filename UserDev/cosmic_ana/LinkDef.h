@@ -13,5 +13,6 @@
 #pragma link C++ class galleryfmwk::cosmic_ana+;
 #pragma link C++ class galleryfmwk::optFilter+;
 #pragma link C++ class h_manager+;
+#pragma link C++ class utility+;
 //ADD_NEW_CLASS ... do not change this line
 #endif

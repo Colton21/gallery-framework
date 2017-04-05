@@ -74,7 +74,7 @@ void h_manager::gen_histograms(TDirectory * dir) {
 	h_shwr_cut_theta_phi = new TH2D("h_shwr_cut_theta_phi", "h_shwr_cut_theta_phi", 60, -100, 100, 60, -190, 190);
 
 	h_shwr_length = new TH1D ("h_shwr_length", "h_shwr_length", 50, 0, 50);
-	h_shwr_end_width = new TH1D ("h_shwr_end_width", "h_shwr_end_width", 50, 0, 50);
+	h_shwr_end_width = new TH1D ("h_shwr_end_width", "h_shwr_end_width", 35, 0, 35);
 	h_shwr_open_angle = new TH1D ("h_shwr_open_angle", "h_shwr_open_angle", 60, 0, 180);
 
 	c1 = new TCanvas();

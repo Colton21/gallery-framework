@@ -28,6 +28,7 @@
 
 #include "Analysis/ana_base.h"
 #include "histo_manager.h"
+#include "utility_functions.h"
 
 #include "lardataobj/RecoBase/Track.h"
 #include "lardataobj/RecoBase/Shower.h"
@@ -49,20 +50,9 @@ class cosmic_ana : galleryfmwk::ana_base {
 
 geoalgo::GeoAlgo const _geo_algo_instance;
 h_manager _h_manager_instance;
+utility _utility_instance;
 
 public:
-
-bool inFV(double x_vtx, double y_vtx, double z_vtx,
-          double x1, double x2, double y1, double y2, double z1, double z2);
-double cylinder_fid_vol(
-        std::vector < geoalgo::Trajectory_t > cosmic_track_trajectory_list,
-        std::vector < double > cosmic_track_length_list,
-        geoalgo::GeoAlgo const _geo_algo_instance,
-        geoalgo::Point_t shwr_vertex,
-        double cut_distance_to_point
-        );
-double geo_distance(const double x1, const double x2, const double y1, const double y2, const double z1, const double z2) const;
-double calc_end_width(const double length, const double open_angle) const;
 
 /// Default constructor
 cosmic_ana() {
@@ -140,6 +130,8 @@ int num_primary_pfp;
 int num_nue;
 int num_numu;
 int num_nue_per_event;
+int num_pfps;
+int num_cosmics;
 int cosmic_vertex_cut_pass;
 int cosmic_vertex_shower_cut_pass;
 

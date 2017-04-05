@@ -34,6 +34,7 @@ def process_file(_file):
     opFilterModule.setTrackProducer("pandoraNuKHit")
     opFilterModule.setShowerProducer("showerrecopandora")
     opFilterModule.setFlashProducer("simpleFlashBeam")
+    opFilterModule.togglePlotting(True)
     opFilterModule.setPEThreshold(50)
     opFilterModule.setVerbose(False)
 

@@ -27,6 +27,9 @@
 #include "GeoAlgo/GeoVector.h"
 #include "GeoAlgo/GeoTrajectory.h"
 
+#include "TH2.h"
+#include "TCanvas.h"
+
 namespace galleryfmwk {
 
 /**
@@ -67,12 +70,16 @@ void setFlashProducer(std::string s) {
 void setPEThreshold(double threshold){
 	_pe_threshold = threshold;
 }
+void togglePlotting(bool yn){
+	_threshold_plotting = yn;
+}
 void setVerbose(bool b){
 	_verbose = b;
 }
 
 protected:
 
+bool _threshold_plotting;
 std::string _track_producer;
 std::string _shower_producer;
 std::string _flash_producer;
@@ -92,6 +99,10 @@ bool _verbose;
 
 int flash_pass_counter;
 int total_flash_counter;
+
+TH2D * h_flash_zywidth;
+TH2D * h_flash_zycenter;
+TH1D * h_flash_threshold;
 
 };
 
