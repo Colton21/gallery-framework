@@ -94,6 +94,10 @@ TH1D * h_shwr_open_angle;
 
 TH1D * h_nue_total_energy;
 
+TH1D * h_shwr_to_boundary;
+TH1D * h_trk_intersect;
+TH1D * h_trk_to_boundary;
+
 TCanvas * c1;
 TCanvas * c1b;
 TCanvas * c1c;
@@ -149,6 +153,9 @@ TCanvas * c28a;
 TCanvas * c28b;
 TCanvas * c28c;
 TCanvas * c29;
+TCanvas * c30a;
+TCanvas * c30b;
+TCanvas * c30c;
 
 };
 

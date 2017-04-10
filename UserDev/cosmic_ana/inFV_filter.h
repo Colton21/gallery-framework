@@ -36,9 +36,11 @@
 #include "lardataobj/RecoBase/Vertex.h"
 #include "lardataobj/RecoBase/Hit.h"
 
-// #include "GeoAlgo/GeoAlgo.h"
-// #include "GeoAlgo/GeoVector.h"
-// #include "GeoAlgo/GeoTrajectory.h"
+#include "GeoAlgo/GeoAlgo.h"
+#include "GeoAlgo/GeoVector.h"
+#include "GeoAlgo/GeoTrajectory.h"
+#include "GeoAlgo/GeoAABox.h"
+#include "GeoAlgo/GeoHalfLine.h"
 
 namespace galleryfmwk {
 
@@ -48,6 +50,7 @@ namespace galleryfmwk {
  */
 class inFV_filter : galleryfmwk::ana_base {
 
+geoalgo::GeoAlgo const _geo_algo_instance;
 h_manager _h_manager_instance;
 utility _utility_instance;
 

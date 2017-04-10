@@ -61,7 +61,7 @@ def process_file(_file):
     cosmicanaModule.fiducial_volume_y_down(0)
     cosmicanaModule.fiducial_volume_z_back(0)
     cosmicanaModule.fiducial_volume_z_front(0)
-    cosmicanaModule.setVerbose(True)
+    cosmicanaModule.setVerbose(False)
 
     # Attach an analysis unit ... here we use a base class which do
     if(use_opFilter == True):

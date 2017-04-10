@@ -5,7 +5,6 @@
 
 //also add containment of the showers and tracks!
 //test that this works for nues
-//also once tested, can remove excess comment lines in cosmic_ana
 
 namespace galleryfmwk {
 
@@ -53,6 +52,7 @@ bool inFV_filter::analyze(gallery::Event * ev) {
 
 	bool _debug = false;
 
+	geoalgo::AABox detector_box(0, -116.5, 0, 256.35, 116.5, 1036.8);
 
 	// Get all of the tracks from the event:
 	art::InputTag pfp_tag(_pfp_tag);
@@ -145,6 +145,30 @@ bool inFV_filter::analyze(gallery::Event * ev) {
 							return false;
 						}
 
+						//let's check if the shower is contained in the active Volume
+						const double dir_x = shower.at(0)->Direction().X();
+						const double dir_y = shower.at(0)->Direction().Y();
+						const double dir_z = shower.at(0)->Direction().Z();
+						geoalgo::HalfLine shower_line(d_xyz[0], d_xyz[1], d_xyz[2], dir_x, dir_y, dir_z);
+						std::vector<geoalgo::Point_t> shower_intersection = _geo_algo_instance.Intersection(detector_box, shower_line);
+						//this should always return 1 Point
+						if(_verbose)
+						{
+							if(shower_intersection.size() == 0 ) {std::cout << "Shower axis does not intersect" << std::endl; }
+							if(shower_intersection.size() == 1 ) {std::cout << "Shower axis intersects once" << std::endl; }
+							if(shower_intersection.size() >= 2 ) {std::cout << "Shower is crossing" << std::endl; }
+						}
+						//now find the distance between intersection point and the vertex
+						if(shower_intersection.size() == 1 )
+						{
+							geoalgo::Point_t this_intersection = shower_intersection.at(0);
+							const double shower_boundary_dist = _utility_instance.utility::geo_distance(this_intersection.at(0), d_xyz[0],
+							                                                                            this_intersection.at(1), d_xyz[1],
+							                                                                            this_intersection.at(2), d_xyz[2]);
+							if(_verbose) {std::cout << "Shower Vertex to Boundary: " << shower_boundary_dist << std::endl; }
+							_h_manager_instance.h_shwr_to_boundary->Fill(shower_boundary_dist);
+						}
+
 						// const double open_angle = shower.at(0)->OpenAngle() * (180 / 3.1415);
 						// _h_manager_instance.h_shwr_open_angle->Fill(open_angle);
 						// const double shwr_length = shower.at(0)->Length();
@@ -168,9 +192,39 @@ bool inFV_filter::analyze(gallery::Event * ev) {
 							return false;
 						}
 
-						//auto const this_track = track.at(0);
+						auto const this_track = track.at(0);
 
 						//let's construct the path of the tracks
+						std::vector<geoalgo::Point_t> track_path;
+						const int track_points = this_track->NPoints();
+						for(int pts = 0; pts < track_points; pts++)
+						{
+							geoalgo::Point_t const track_point (
+							        this_track->LocationAtPoint(pts).X(),
+							        this_track->LocationAtPoint(pts).Y(),
+							        this_track->LocationAtPoint(pts).Z());
+							track_path.push_back(track_point);
+						}
+						const geoalgo::Trajectory_t trj = track_path;
+
+						//check which point the track intersects the active volume
+						std::vector<geoalgo::Point_t> intersection_points = _geo_algo_instance.Intersection(detector_box, trj);
+						_h_manager_instance.h_trk_intersect->Fill(intersection_points.size());
+						if(intersection_points.size() == 1 )
+						{
+							geoalgo::Point_t this_intersection = intersection_points.at(0);
+							const double track_boundary_dist = _utility_instance.utility::geo_distance(this_intersection.at(0), d_xyz[0],
+							                                                                           this_intersection.at(1), d_xyz[1],
+							                                                                           this_intersection.at(2), d_xyz[2]);
+							_h_manager_instance.h_trk_to_boundary->Fill(track_boundary_dist);
+						}
+						if(_verbose)
+						{
+							if(intersection_points.size() == 0 ) {std::cout << "No intersection - track is contained" << std::endl; }
+							if(intersection_points.size() == 1 ) {std::cout << "Track is either entering or exiting" << std::endl; }
+							if(intersection_points.size() == 2 ) {std::cout << "Track is crossing" << std::endl; }
+						}
+
 
 						//let's get the track length!
 						//const double track_length = this_track->Length();

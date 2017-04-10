@@ -9,8 +9,15 @@ void h_manager::gen_histograms_fv(TDirectory * dir){
 	h_nue_fv_cuts = new TH1D("h_nue_fv_cuts", "h_nue_fv_cuts", 50, 0, 50);
 	h_nue_fv_top_cuts = new TH1D("h_nue_fv_top_cuts", "h_nue_fv_top_cuts", 50, 0, 50);
 
+	h_shwr_to_boundary = new TH1D("h_shwr_to_boundary", "h_shwr_to_boundary", 50, 0, 10000);
+	h_trk_intersect = new TH1D("h_trk_intersect", "h_trk_intersect", 5, 0, 5);
+	h_trk_to_boundary = new TH1D("h_trk_to_boundary", "h_trk_to_boundary", 50, 0, 10000);
+
 	c3 = new TCanvas();
 	c3b = new TCanvas();
+	c30a = new TCanvas();
+	c30b = new TCanvas();
+	c30c = new TCanvas();
 
 }
 
@@ -164,6 +171,23 @@ void h_manager::draw_save_fv()
 	h_nue_fv_top_cuts->GetXaxis()->SetTitle("Fiducial Volume from Top [cm]");
 	h_nue_fv_top_cuts->GetYaxis()->SetTitle("Events in Volume");
 	c3b->Print("nue-like_fiducial_volume_y.pdf");
+
+	c30a->cd();
+	h_shwr_to_boundary->Draw();
+	h_shwr_to_boundary->GetXaxis()->SetTitle("Shower Vtx to AV Boundary [cm]");
+	h_shwr_to_boundary->GetYaxis()->SetTitle("Events");
+	c30a->Print("nue-like_shwr_to_boundary.pdf");
+	c30b->cd();
+	h_trk_intersect->Draw();
+	h_trk_intersect->GetXaxis()->SetTitle("Track Intersection Types");
+	h_trk_intersect->GetYaxis()->SetTitle("Events");
+	c30b->Print("nue-like_trk_intersections.pdf");
+	c30c->cd();
+	h_trk_to_boundary->Draw();
+	h_trk_to_boundary->GetXaxis()->SetTitle("Track Start to AV Boundary [cm]");
+	h_trk_to_boundary->GetYaxis()->SetTitle("Events");
+	c30c->Print("nue-like_trk_to_boundary.pdf");
+
 
 	std::cout << "Finished Saving Histograms (inFV)" << std::endl;
 

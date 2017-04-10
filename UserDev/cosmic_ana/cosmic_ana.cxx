@@ -89,8 +89,6 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 	num_cosmics = 0;
 	num_nue_per_event = 0;
 
-	std::cout << "Cosmic Ana Event 2" << std::endl;
-
 	//pfp loop
 	for(auto pfparts : pfparticles)
 	{
@@ -100,8 +98,6 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 		std::vector<recob::Vertex const*> vertex;
 
 		vertex_for_pfp.get(num_pfps,vertex);
-
-		std::cout << "b" << std::endl;
 		//get vertex vector
 		double xyz [3];
 		vertex.at(0)->XYZ(xyz);
@@ -264,7 +260,7 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 				{
 					auto const daughter = pfparticles.at(i);
 					std::vector<recob::Vertex const*> d_vertex;
-					vertex_for_pfp.get(i, d_vertex)
+					vertex_for_pfp.get(i, d_vertex);
 					//get vertex vector
 					double d_xyz [3];
 					d_vertex.at(0)->XYZ(d_xyz);
