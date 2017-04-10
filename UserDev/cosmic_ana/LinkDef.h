@@ -14,5 +14,6 @@
 #pragma link C++ class galleryfmwk::optFilter+;
 #pragma link C++ class h_manager+;
 #pragma link C++ class utility+;
+#pragma link C++ class galleryfmwk::inFV_filter+;
 //ADD_NEW_CLASS ... do not change this line
 #endif

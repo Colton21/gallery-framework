@@ -24,9 +24,10 @@ def process_file(_file):
     # my_proc.set_output_file("")
 
     use_opFilter = False
-    use_cosmic_ana = False
+    use_inFVFilter = True
+    use_cosmic_ana = True
 
-    if(use_opFilter == False and use_cosmic_ana == False):
+    if(use_opFilter == False and use_cosmic_ana == False and use_inFVFilter == False):
         print 'No module was selected ... exiting'
         exit(1)
 
@@ -38,9 +39,19 @@ def process_file(_file):
     opFilterModule.setPEThreshold(50)
     opFilterModule.setVerbose(False)
 
+    inFVModule = galleryfmwk.inFV_filter()
+    inFVModule.setPfpProducer("pandoraNu")
+    inFVModule.setPfpCosmicProducer("pandoraCosmic")
+    inFVModule.setNearestCutDist(5)
+    inFVModule.fiducial_volume_x_right(0)
+    inFVModule.fiducial_volume_x_left(0)
+    inFVModule.fiducial_volume_y_up(0)
+    inFVModule.fiducial_volume_y_down(0)
+    inFVModule.fiducial_volume_z_back(0)
+    inFVModule.fiducial_volume_z_front(0)
+    inFVModule.setVerbose(False)
+
     cosmicanaModule = galleryfmwk.cosmic_ana()
-    cosmicanaModule.setTrackProducer("pandoraNuKHit")
-    cosmicanaModule.setShowerProducer("showerrecopandora")
     cosmicanaModule.setPfpProducer("pandoraNu")
     cosmicanaModule.setPfpCosmicProducer("pandoraCosmic")
     cosmicanaModule.setNearestCutDist(5)
@@ -50,11 +61,13 @@ def process_file(_file):
     cosmicanaModule.fiducial_volume_y_down(0)
     cosmicanaModule.fiducial_volume_z_back(0)
     cosmicanaModule.fiducial_volume_z_front(0)
-    cosmicanaModule.setVerbose(False)
+    cosmicanaModule.setVerbose(True)
 
     # Attach an analysis unit ... here we use a base class which do
     if(use_opFilter == True):
         my_proc.add_process(opFilterModule)
+    if(use_inFVFilter == True):
+        my_proc.add_process(inFVModule)
     if(use_cosmic_ana == True):
         my_proc.add_process(cosmicanaModule)
 

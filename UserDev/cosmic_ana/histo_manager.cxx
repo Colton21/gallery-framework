@@ -1,5 +1,19 @@
 #include "histo_manager.h"
 
+void h_manager::gen_histograms_fv(TDirectory * dir){
+
+	std::cout << "Generating Histograms (inFV)" << std::endl;
+
+	TH1D::AddDirectory(kFALSE);
+
+	h_nue_fv_cuts = new TH1D("h_nue_fv_cuts", "h_nue_fv_cuts", 50, 0, 50);
+	h_nue_fv_top_cuts = new TH1D("h_nue_fv_top_cuts", "h_nue_fv_top_cuts", 50, 0, 50);
+
+	c3 = new TCanvas();
+	c3b = new TCanvas();
+
+}
+
 
 void h_manager::gen_histograms(TDirectory * dir) {
 //max fv cut for plotting (in cm)
@@ -8,8 +22,6 @@ void h_manager::gen_histograms(TDirectory * dir) {
 
 	TH1::AddDirectory(kFALSE);
 
-	h_nue_fv_cuts = new TH1D("h_nue_fv_cuts", "h_nue_fv_cuts", 50, 0, 50);
-	h_nue_fv_top_cuts = new TH1D("h_nue_fv_top_cuts", "h_nue_fv_top_cuts", 50, 0, 50);
 	h_numu_fv_cuts = new TH1D("h_numu_fv_cuts", "h_numu_fv_cuts", 50, 0, 50);
 
 	h_nue_like_daughters = new TH2D("h_nue_like_daughters", "h_nue-like_daughters", 6, 0, 6, 6, 0, 6);
@@ -77,14 +89,14 @@ void h_manager::gen_histograms(TDirectory * dir) {
 	h_shwr_end_width = new TH1D ("h_shwr_end_width", "h_shwr_end_width", 35, 0, 35);
 	h_shwr_open_angle = new TH1D ("h_shwr_open_angle", "h_shwr_open_angle", 60, 0, 180);
 
+	h_nue_total_energy = new TH1D ("h_nue_total_energy", "h_nue_total_energy", 50, 0, 5);
+
 	c1 = new TCanvas();
 	c1b = new TCanvas();
 	c1c = new TCanvas();
 	c1d = new TCanvas();
 	c1e = new TCanvas();
 	c2 = new TCanvas();
-	c3 = new TCanvas();
-	c3b = new TCanvas();
 	c4 = new TCanvas();
 	c5 = new TCanvas();
 	c6 = new TCanvas();
@@ -131,10 +143,30 @@ void h_manager::gen_histograms(TDirectory * dir) {
 	c28a = new TCanvas();
 	c28b = new TCanvas();
 	c28c = new TCanvas();
+	c29 = new TCanvas();
 
 	h_numu_like_vtx_xy->Fill(1, 1);
 
 	std::cout << "Finished Generating Histograms" << std::endl;
+
+}
+
+void h_manager::draw_save_fv()
+{
+
+	c3->cd();
+	h_nue_fv_cuts->Draw();
+	h_nue_fv_cuts->GetXaxis()->SetTitle("Fiducial Volume Cut [cm]");
+	h_nue_fv_cuts->GetYaxis()->SetTitle("Events in Volume");
+	c3->Print("nue-like_fiducial_volume.pdf");
+	c3b->cd();
+	h_nue_fv_top_cuts->Draw();
+	h_nue_fv_top_cuts->GetXaxis()->SetTitle("Fiducial Volume from Top [cm]");
+	h_nue_fv_top_cuts->GetYaxis()->SetTitle("Events in Volume");
+	c3b->Print("nue-like_fiducial_volume_y.pdf");
+
+	std::cout << "Finished Saving Histograms (inFV)" << std::endl;
+
 
 }
 
@@ -177,16 +209,6 @@ void h_manager::draw_save()
 	h_numu_like_daughters->GetYaxis()->SetTitle("tracks");
 	c2->Print("numu-like_daughters.pdf");
 
-	c3->cd();
-	h_nue_fv_cuts->Draw();
-	h_nue_fv_cuts->GetXaxis()->SetTitle("Fiducial Volume Cut [cm]");
-	h_nue_fv_cuts->GetYaxis()->SetTitle("Events in Volume");
-	c3->Print("nue-like_fiducial_volume.pdf");
-	c3b->cd();
-	h_nue_fv_top_cuts->Draw();
-	h_nue_fv_top_cuts->GetXaxis()->SetTitle("Fiducial Volume from Top [cm]");
-	h_nue_fv_top_cuts->GetYaxis()->SetTitle("Events in Volume");
-	c3b->Print("nue-like_fiducial_volume_y.pdf");
 	c4->cd();
 	h_numu_fv_cuts->Draw();
 	h_numu_fv_cuts->GetXaxis()->SetTitle("Fiducial Volume Cut [cm]");
@@ -435,6 +457,12 @@ void h_manager::draw_save()
 	h_shwr_end_width->GetYaxis()->SetTitle("Events");
 	h_shwr_end_width->GetXaxis()->SetTitle("Shower End Width [cm]");
 	c28c->Print("nue-like_shwr_end_width.pdf");
+
+	c29->cd();
+	h_nue_total_energy->Draw();
+	h_nue_total_energy->GetYaxis()->SetTitle("Events");
+	h_nue_total_energy->GetXaxis()->SetTitle("Summed Energy (track + shower) [GeV]");
+	c29->Print("nue-like_total_energy.pdf");
 
 
 	std::cout << "Finished Saving Histograms" << std::endl;

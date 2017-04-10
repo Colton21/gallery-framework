@@ -1,7 +1,6 @@
 #ifndef UTILITY_FUNCTIONS_H
 #define UTILITY_FUNCTIONS_H
 
-
 #include "GeoAlgo/GeoAlgo.h"
 #include "GeoAlgo/GeoVector.h"
 #include "GeoAlgo/GeoTrajectory.h"

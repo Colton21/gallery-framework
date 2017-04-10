@@ -15,7 +15,6 @@ bool cosmic_ana::initialize() {
 	//
 
 	_h_manager_instance.gen_histograms(gDirectory);
-	_h_manager_instance.h_numu_like_vtx_xy->Fill(1,2);
 
 	double fiducial_volume_x_right(_right);
 	double fiducial_volume_x_left(_left);
@@ -55,19 +54,11 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 	num_cosmic++;
 
 	// For each file, loop over all events.
-
 	// Get all of the tracks from the event:
-	art::InputTag tracks_tag(_track_producer);
-	art::InputTag showers_tag(_shower_producer);
 	art::InputTag pfp_tag(_pfp_tag);
 	art::InputTag pfp_cosmic_tag(_pfp_cosmic_tag);
 	double cut_distance_to_point(_cut);
 
-
-	auto const & tracks
-	        = ev->getValidHandle<std::vector <recob::Track> >(tracks_tag);
-	auto const & showers
-	        = ev->getValidHandle<std::vector <recob::Shower> >(showers_tag);
 	auto const & pfp
 	        = ev->getValidHandle<std::vector <recob::PFParticle> > (pfp_tag);
 	auto const & pfparticles(*pfp);
@@ -88,6 +79,7 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 	std::vector < geoalgo::Point_t> nue_vertex_list;
 	std::vector < geoalgo::Point_t> shwr_vertex_list;
 	std::vector < double > shwr_energy_list;
+	std::vector < double > trk_energy_list;
 	std::vector < geoalgo::Point_t> shwr_vertex_lrgDist_list;
 
 	std::vector < double > shwr_dir_vector;
@@ -96,28 +88,23 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 	num_pfps = 0;
 	num_cosmics = 0;
 	num_nue_per_event = 0;
+
+	std::cout << "Cosmic Ana Event 2" << std::endl;
+
 	//pfp loop
 	for(auto pfparts : pfparticles)
 	{
-
 		//******************************
 		//check for reconstructed vertex
 		//******************************
 		std::vector<recob::Vertex const*> vertex;
+
 		vertex_for_pfp.get(num_pfps,vertex);
-		if(vertex.size() == 0 )
-		{
-			if(_verbose == true) {std::cout << "No vertex association found!" << std::endl; }
-			return false;
-		}
+
+		std::cout << "b" << std::endl;
 		//get vertex vector
 		double xyz [3];
 		vertex.at(0)->XYZ(xyz);
-		if(_utility_instance.inFV(xyz[0], xyz[1], xyz[2], _right, _left, _up, _down, _back, _front) == false)
-		{
-			if(_verbose) {std::cout << "Reco vertex outside fiducial volume!" << std::endl; }
-			return false;
-		}
 
 		//************************************
 		//check if pfp is neutrino-like object
@@ -146,12 +133,6 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 					//let's get the vertex associations for the daughters
 					std::vector<recob::Vertex const*> d_vertex;
 					vertex_for_pfp.get(i, d_vertex);
-					//if no daughter vertex
-					if(d_vertex.size() == 0 )
-					{
-						if(_verbose) {std::cout << "No vertex association found for daughter!" << std::endl; }
-						return false;
-					}
 					//get vertex vector
 					double d_xyz [3];
 					d_vertex.at(0)->XYZ(d_xyz);
@@ -163,11 +144,6 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 						//let's get the shower associations
 						std::vector<recob::Shower const*> shower;
 						shower_for_pfp.get(i, shower);
-						if(shower.size() == 0)
-						{
-							if(_verbose) {std::cout << "No shower for this pfp shower!" << std::endl; }
-							continue;
-						}
 
 						//shower daughter vertices
 						_h_manager_instance.h_nue_like_shwr_daughters_xy->Fill(d_xyz[0], d_xyz[1]);
@@ -225,11 +201,8 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 						trk_daughters++;
 						std::vector<recob::Track const*> track;
 						track_for_pfp.get(i, track);
-						if(track.size() == 0)
-						{
-							if(_verbose) {std::cout << "No track for this pfp track!" << std::endl; }
-							continue;
-						}
+
+						auto const this_track = track.at(0);
 
 						//track vertices
 						_h_manager_instance.h_nue_like_trk_daughters_xy->Fill(d_xyz[0], d_xyz[1]);
@@ -237,13 +210,13 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 
 						//let's construct the path of the tracks
 						std::vector<geoalgo::Point_t> track_path;
-						const int track_points = track.at(0)->NPoints();
+						const int track_points = this_track->NPoints();
 						for(int pts = 0; pts < track_points; pts++)
 						{
 							geoalgo::Point_t const track_point (
-							        track.at(0)->LocationAtPoint(pts).X(),
-							        track.at(0)->LocationAtPoint(pts).Y(),
-							        track.at(0)->LocationAtPoint(pts).Z());
+							        this_track->LocationAtPoint(pts).X(),
+							        this_track->LocationAtPoint(pts).Y(),
+							        this_track->LocationAtPoint(pts).Z());
 							track_path.push_back(track_point);
 						}
 						const geoalgo::Trajectory_t trj = track_path;
@@ -251,7 +224,7 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 						track_trajectory_list.push_back(trj);
 
 						//let's get the track length!
-						const double track_length = track.at(0)->Length();
+						const double track_length = this_track->Length();
 						_h_manager_instance.h_nue_trk_length->Fill(track_length);
 
 						//let's look at the track directions
@@ -259,39 +232,39 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 						//const double dir_y = track.at(0)->VertexDirection().Y();
 						//const double dir_z = track.at(0)->VertexDirection().Z();
 
+						//let's get the momentum at the start of the track
+						double trk_start_m = this_track->VertexMomentum();
+						//std::cout << this_track->StartMomentumVector().X()+this_track->StartMomentumVector().Y()+this_track->StartMomentumVector().Z() << std::endl;
+						//std::cout << trk_start_m << std::endl;
+						trk_energy_list.push_back(trk_start_m);
+
 					}//end nue track daughters
 				}//end nue daughters
 				_h_manager_instance.h_nue_like_trk_daughters->Fill(trk_daughters);
 				_h_manager_instance.h_nue_like_daughters->Fill(shwr_daughters, trk_daughters);
 				_h_manager_instance.h_nue_like_daughters_logz->Fill(shwr_daughters, trk_daughters);
 
-				for(int fv_cut = 0; fv_cut < fv_cut_max; fv_cut++)
-				{
-					if(_utility_instance.inFV(xyz[0], xyz[1], xyz[2], fv_cut, fv_cut, fv_cut, fv_cut, fv_cut, fv_cut) == true)
-					{_h_manager_instance.h_nue_fv_cuts->Fill(fv_cut); }
-					//just fv cut from top
-					if(_utility_instance.inFV(xyz[0], xyz[1], xyz[2], 0, 0, fv_cut, 0, 0, 0) == true)
-					{_h_manager_instance.h_nue_fv_top_cuts->Fill(fv_cut); }
-				}
-			}
+				//sum the energy of the nue event
+				double shwr_E = 0;
+				double trk_E  = 0;
+				for(auto const shwr_energy : shwr_energy_list) {shwr_E += shwr_energy; }
+				for(auto const trk_energy  : trk_energy_list ) {trk_E += trk_energy; }
+				const double total_nue_momentum = shwr_E + trk_E;
 
-			//numus!
+			}//end nues
+			 //numus!
 			if(pfparts.PdgCode() == 14)
 			{
 				num_numu++;
 				_h_manager_instance.h_numu_like_vtx_xy->Fill(xyz[0], xyz[1]);
 				_h_manager_instance.h_numu_like_vtx_yz->Fill(xyz[2], xyz[1]);
 
+
 				for(std::size_t const i : pfparts.Daughters())
 				{
 					auto const daughter = pfparticles.at(i);
 					std::vector<recob::Vertex const*> d_vertex;
-					vertex_for_pfp.get(i, d_vertex);
-					if(d_vertex.size() ==0 )
-					{
-						if(_verbose) {std::cout << "No vertex association found for daughter!" << std::endl; }
-						return false;
-					}
+					vertex_for_pfp.get(i, d_vertex)
 					//get vertex vector
 					double d_xyz [3];
 					d_vertex.at(0)->XYZ(d_xyz);
@@ -313,6 +286,7 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 
 				}
 				_h_manager_instance.h_numu_like_daughters->Fill(shwr_daughters, trk_daughters);
+
 			}//end if numu-like
 		}//end if nu-like
 		num_pfps++;
@@ -375,9 +349,9 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 			const std::vector < double > plane_energy = cosmic_shower.at(0)->Energy();
 			const int bestplane = cosmic_shower.at(0)->best_plane();
 			const double cosmic_shwr_energy = plane_energy.at(bestplane);
-		}        //end loop showers
+		} //end loop showers
 		num_cosmics++;
-	}        //end loop cosmics
+	} //end loop cosmics
 
 	//*********************************************************
 	//******************* Geometry studies! *******************

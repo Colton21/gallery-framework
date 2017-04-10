@@ -20,6 +20,8 @@ public:
 
 void gen_histograms(TDirectory * dir);
 void draw_save();
+void gen_histograms_fv(TDirectory * dir);
+void draw_save_fv();
 
 TH1D * h_nue_fv_cuts;
 TH1D * h_nue_fv_top_cuts;
@@ -90,6 +92,8 @@ TH1D * h_shwr_length;
 TH1D * h_shwr_end_width;
 TH1D * h_shwr_open_angle;
 
+TH1D * h_nue_total_energy;
+
 TCanvas * c1;
 TCanvas * c1b;
 TCanvas * c1c;
@@ -144,6 +148,7 @@ TCanvas * c27g;
 TCanvas * c28a;
 TCanvas * c28b;
 TCanvas * c28c;
+TCanvas * c29;
 
 };
 
