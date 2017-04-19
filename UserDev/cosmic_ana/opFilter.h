@@ -22,13 +22,19 @@
 #include "Analysis/ana_base.h"
 
 #include "lardataobj/RecoBase/OpFlash.h"
+#include "lardataobj/RecoBase/PFParticle.h"
+#include "lardataobj/RecoBase/Vertex.h"
 
 #include "GeoAlgo/GeoAlgo.h"
 #include "GeoAlgo/GeoVector.h"
 #include "GeoAlgo/GeoTrajectory.h"
 
+#include "TH1.h"
 #include "TH2.h"
 #include "TCanvas.h"
+#include "TSystem.h"
+#include "TROOT.h"
+#include "TDirectory.h"
 
 namespace galleryfmwk {
 
@@ -57,6 +63,9 @@ bool analyze(gallery::Event * ev);
 
 bool finalize();
 
+void setPfpProducer(std::string s) {
+	_pfp_tag = s;
+}
 
 void setTrackProducer(std::string s) {
 	_track_producer = s;
@@ -73,6 +82,14 @@ void setPEThreshold(double threshold){
 void togglePlotting(bool yn){
 	_threshold_plotting = yn;
 }
+
+void setMinTime(double d){
+	_min_time = d;
+}
+void setMaxTime(double d){
+	_max_time = d;
+}
+
 void setVerbose(bool b){
 	_verbose = b;
 }
@@ -80,10 +97,13 @@ void setVerbose(bool b){
 protected:
 
 bool _threshold_plotting;
+std::string _pfp_tag;
 std::string _track_producer;
 std::string _shower_producer;
 std::string _flash_producer;
 double _pe_threshold;
+double _min_time;
+double _max_time;
 
 double x_boundary1;
 double x_boundary2;
@@ -103,6 +123,11 @@ int total_flash_counter;
 TH2D * h_flash_zywidth;
 TH2D * h_flash_zycenter;
 TH1D * h_flash_threshold;
+
+TH1D * h_largest_flash;
+TH2D * h_largest_flash_y;
+TH1D * h_nue_shwr_vtx_flash_dist_zy;
+TH2D * h_nue_shwr_vtx_flash_width_zy;
 
 };
 

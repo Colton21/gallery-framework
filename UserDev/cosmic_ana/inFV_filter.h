@@ -118,6 +118,8 @@ double _down;
 double _back;
 double _front;
 
+int num_events;
+int num_events_remaining;
 
 int num_cosmic;
 int num_primary_pfp;

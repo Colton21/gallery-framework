@@ -5,19 +5,13 @@ bool utility::inFV(double x_vtx, double y_vtx, double z_vtx,
                    double x1, double x2, double y1, double y2, double z1, double z2)
 {
 	//is vertex in given FV?
-	const double x_boundary1 = 0;
-	const double x_boundary2 = 256.35;
-	const double y_boundary1 = -116.5;
-	const double y_boundary2 = 116.5;
-	const double z_boundary1 = 0;
-	const double z_boundary2 = 1036.8;
 
-	if(x_vtx > x_boundary1 + x2 &&
-	   x_vtx < x_boundary2 - x1 &&
-	   y_vtx > y_boundary1 + y2 &&
-	   y_vtx < y_boundary2 - y1 &&
-	   z_vtx > z_boundary1 + z1 &&
-	   z_vtx < z_boundary2 - z2)
+	if(x_vtx > x2 &&
+	   x_vtx < x1 &&
+	   y_vtx > y2 &&
+	   y_vtx < y1 &&
+	   z_vtx > z1 &&
+	   z_vtx < z2)
 	{
 		return true;
 	}
@@ -33,6 +27,7 @@ double utility::cylinder_fid_vol(
         double cut_distance_to_point
         )
 {
+	bool _verbose = false;
 	double closest_track = 100;
 	int track_counter = 0;
 	int this_track_counter = 0;
@@ -41,15 +36,25 @@ double utility::cylinder_fid_vol(
 		//which track is closest?
 		track_counter++;
 		const double close_track = _geo_algo_instance.SqDist(shwr_vertex, cosmic_track_traj);
-		if(close_track < closest_track)
+		if(close_track <= closest_track)
 		{
 			closest_track = close_track;
 			this_track_counter = track_counter;
 		}
 	}
-	const double closest_track_length = cosmic_track_length_list.at(this_track_counter);
+	double closest_track_length = 0;
+	try
+	{
+		closest_track_length = cosmic_track_length_list.at(this_track_counter);
+	}
+	catch(...)
+	{
+		if(_verbose) {std::cout << "Track counter not same length as track length vector" << std::endl; }
+		//return 0;
+	}
 	//calculate the volume of the cylinder
-	return closest_track_length * 3.1415 * cut_distance_to_point * cut_distance_to_point;
+	const double cylinder_volume = (closest_track_length * 3.1415 * cut_distance_to_point * cut_distance_to_point);
+	return cylinder_volume;
 }
 
 double utility::geo_distance(const double x1, const double x2, const double y1, const double y2, const double z1, const double z2) const

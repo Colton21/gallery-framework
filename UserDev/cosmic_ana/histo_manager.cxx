@@ -9,9 +9,9 @@ void h_manager::gen_histograms_fv(TDirectory * dir){
 	h_nue_fv_cuts = new TH1D("h_nue_fv_cuts", "h_nue_fv_cuts", 50, 0, 50);
 	h_nue_fv_top_cuts = new TH1D("h_nue_fv_top_cuts", "h_nue_fv_top_cuts", 50, 0, 50);
 
-	h_shwr_to_boundary = new TH1D("h_shwr_to_boundary", "h_shwr_to_boundary", 50, 0, 10000);
+	h_shwr_to_boundary = new TH1D("h_shwr_to_boundary", "h_shwr_to_boundary", 50, 0, 1200);
 	h_trk_intersect = new TH1D("h_trk_intersect", "h_trk_intersect", 5, 0, 5);
-	h_trk_to_boundary = new TH1D("h_trk_to_boundary", "h_trk_to_boundary", 50, 0, 10000);
+	h_trk_to_boundary = new TH1D("h_trk_to_boundary", "h_trk_to_boundary", 50, 0, 500);
 
 	c3 = new TCanvas();
 	c3b = new TCanvas();
@@ -82,7 +82,7 @@ void h_manager::gen_histograms(TDirectory * dir) {
 
 	h_num_nue_per_event = new TH1D("h_num_nue_per_event", "h_num_nue_per_event", 10, 0, 10);
 
-	h_cylinder_vol = new TH1D("h_cylinder_vol", "h_cylinder_vol", 50, 0, 100);
+	h_cylinder_vol = new TH1D("h_cylinder_vol", "h_cylinder_vol", 50, 0, 0.1);
 
 	h_shwr_direction_xy = new TH2D("h_shwr_direction_xy", "h_shwr_direction_xy", 100, -1, 1, 100, -1, 1);
 	h_shwr_direction_zy = new TH2D("h_shwr_direction_zy", "h_shwr_direction_zy", 100, -1, 1, 100, -1, 1);

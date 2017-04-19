@@ -12,8 +12,8 @@
 
     @{*/
 
-#ifndef GALLERY_FMWK_COSMIC_ANA_H
-#define GALLERY_FMWK_COSMIC_ANA_H
+#ifndef GALLERY_FMWK_COSMIC_FILTER_H
+#define GALLERY_FMWK_COSMIC_FILTER_H
 
 #include "TTree.h"
 #include "TH1.h"
@@ -29,6 +29,11 @@
 #include "Analysis/ana_base.h"
 #include "histo_manager.h"
 #include "utility_functions.h"
+
+#include "nusimdata/SimulationBase/MCParticle.h"
+#include "nusimdata/SimulationBase/MCNeutrino.h"
+#include "nusimdata/SimulationBase/MCTruth.h"
+
 
 #include "lardataobj/RecoBase/Track.h"
 #include "lardataobj/RecoBase/Shower.h"
@@ -46,7 +51,7 @@ namespace galleryfmwk {
    \class example_ana
    User custom analysis class made by SHELL_USER_NAME
  */
-class cosmic_ana : galleryfmwk::ana_base {
+class cosmic_filter : galleryfmwk::ana_base {
 
 geoalgo::GeoAlgo const _geo_algo_instance;
 h_manager _h_manager_instance;
@@ -55,7 +60,7 @@ utility _utility_instance;
 public:
 
 /// Default constructor
-cosmic_ana() {
+cosmic_filter() {
 	_verbose = false;
 }
 
@@ -71,6 +76,9 @@ bool analyze(gallery::Event * ev);
 
 bool finalize();
 
+void setWantCC(bool b) {
+	wantCC = b;
+}
 
 void setTrackProducer(std::string s) {
 	_track_producer = s;
@@ -102,8 +110,8 @@ void fiducial_volume_z_back(double back){
 void fiducial_volume_z_front(double front){
 	_front = front;
 }
-void setPfpProducer(std::string s){
-	_pfp_tag = s;
+void setMCProducer(std::string s){
+	_mc_part_tag = s;
 }
 void setPfpCosmicProducer(std::string s){
 	_pfp_cosmic_tag = s;
@@ -114,7 +122,7 @@ protected:
 bool _verbose;
 std::string _track_producer;
 std::string _shower_producer;
-std::string _pfp_tag;
+std::string _mc_part_tag;
 std::string _pfp_cosmic_tag;
 double _cut;
 double _right;
@@ -123,29 +131,10 @@ double _up;
 double _down;
 double _back;
 double _front;
+bool wantCC;
 
-
-int num_cosmic;
-int num_primary_pfp;
-int num_nue;
-int num_numu;
-int num_nue_per_event;
-int num_pfps;
-int num_cosmics;
-int cosmic_vertex_cut_pass;
-int cosmic_vertex_shower_cut_pass;
-int cosmic_vertex_shower_cut_event_pass;
-
-double x_boundary1;
-double x_boundary2;
-double y_boundary1;
-double y_boundary2;
-double z_boundary1;
-double z_boundary2;
-double fromWall;
-
-double fv_cut_max;
-double ub_total_vol;
+int num_events;
+int num_events_remaining;
 
 };
 

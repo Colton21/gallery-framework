@@ -38,6 +38,9 @@ bool inFV_filter::initialize() {
 	cosmic_vertex_cut_pass = 0;
 	cosmic_vertex_shower_cut_pass = 0;
 
+	num_events = 0;
+	num_events_remaining = 0;
+
 	fv_cut_max = 50;
 
 	return true;
@@ -47,6 +50,7 @@ bool inFV_filter::initialize() {
 bool inFV_filter::analyze(gallery::Event * ev) {
 
 	num_cosmic++;
+	num_events++;
 
 	// For each file, loop over all events.
 
@@ -92,7 +96,7 @@ bool inFV_filter::analyze(gallery::Event * ev) {
 		//get vertex vector
 		double xyz [3];
 		vertex.at(0)->XYZ(xyz);
-		if(_utility_instance.inFV(xyz[0], xyz[1], xyz[2], _right, _left, _up, _down, _back, _front) == false)
+		if(_utility_instance.inFV(xyz[0], xyz[1], xyz[2], x_boundary2, x_boundary1, y_boundary2, y_boundary1, z_boundary1, z_boundary2) == false)
 		{
 			if(_verbose) {std::cout << "Reco vertex outside fiducial volume!" << std::endl; }
 			return false;
@@ -130,7 +134,7 @@ bool inFV_filter::analyze(gallery::Event * ev) {
 					double d_xyz [3];
 					d_vertex.at(0)->XYZ(d_xyz);
 					//check if daughter vertex is inFV
-					if(_utility_instance.inFV(d_xyz[0], d_xyz[1], d_xyz[2], _right, _left, _up, _down, _back, _front) == false) {return false; }
+					if(_utility_instance.inFV(d_xyz[0], d_xyz[1], d_xyz[2],x_boundary2, x_boundary1, y_boundary2, y_boundary1, z_boundary1, z_boundary2) == false) {return false; }
 
 					//shwr daughters
 					if(daughter.PdgCode() == 11)
@@ -224,6 +228,8 @@ bool inFV_filter::analyze(gallery::Event * ev) {
 							if(intersection_points.size() == 1 ) {std::cout << "Track is either entering or exiting" << std::endl; }
 							if(intersection_points.size() == 2 ) {std::cout << "Track is crossing" << std::endl; }
 						}
+						//we want all tracks to be fully contained
+						if(intersection_points.size() == 1) {return false; }
 
 
 						//let's get the track length!
@@ -241,10 +247,10 @@ bool inFV_filter::analyze(gallery::Event * ev) {
 
 				for(int fv_cut = 0; fv_cut < fv_cut_max; fv_cut++)
 				{
-					if(_utility_instance.inFV(xyz[0], xyz[1], xyz[2], fv_cut, fv_cut, fv_cut, fv_cut, fv_cut, fv_cut) == true)
+					if(_utility_instance.inFV(xyz[0], xyz[1], xyz[2], x_boundary2 - fv_cut, x_boundary1 + fv_cut, y_boundary2 - fv_cut, y_boundary1 + fv_cut, z_boundary1 + fv_cut, z_boundary2 - fv_cut) == true)
 					{_h_manager_instance.h_nue_fv_cuts->Fill(fv_cut); }
 					//just fv cut from top
-					if(_utility_instance.inFV(xyz[0], xyz[1], xyz[2], 0, 0, fv_cut, 0, 0, 0) == true)
+					if(_utility_instance.inFV(xyz[0], xyz[1], xyz[2], x_boundary2, x_boundary1, y_boundary2 - fv_cut, y_boundary1, z_boundary1, z_boundary2) == true)
 					{_h_manager_instance.h_nue_fv_top_cuts->Fill(fv_cut); }
 				}
 			}//end nues
@@ -272,7 +278,7 @@ bool inFV_filter::analyze(gallery::Event * ev) {
 					double d_xyz [3];
 					d_vertex.at(0)->XYZ(d_xyz);
 
-					if(_utility_instance.inFV(d_xyz[0], d_xyz[1], d_xyz[2], _right, _left, _up, _down, _back, _front) == false) {return false; }
+					if(_utility_instance.inFV(d_xyz[0], d_xyz[1], d_xyz[2], x_boundary2, x_boundary1, y_boundary2, y_boundary1, z_boundary1, z_boundary2) == false) {return false; }
 				}
 			}//end if numu-like
 		}//end if nu-like
@@ -284,6 +290,8 @@ bool inFV_filter::analyze(gallery::Event * ev) {
 
 	if(_debug) {std::cout << "i" << std::endl; }
 
+	num_events_remaining++;
+
 	return true;
 }
 
@@ -292,6 +300,8 @@ bool inFV_filter::analyze(gallery::Event * ev) {
 bool inFV_filter::finalize() {
 
 	std::cout << "Finished inFV Filter" << std::endl;
+	std::cout << "Number of events:           " << num_events << std::endl;
+	std::cout << "Number of events remaining: " << num_events_remaining << std::endl;
 
 	_h_manager_instance.draw_save_fv();
 

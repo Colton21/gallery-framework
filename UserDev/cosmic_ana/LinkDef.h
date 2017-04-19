@@ -12,6 +12,7 @@
 //#pragma link C++ class galleryfmwk::example_ana+;
 #pragma link C++ class galleryfmwk::cosmic_ana+;
 #pragma link C++ class galleryfmwk::optFilter+;
+#pragma link C++ class galleryfmwk::cosmic_filter+;
 #pragma link C++ class h_manager+;
 #pragma link C++ class utility+;
 #pragma link C++ class galleryfmwk::inFV_filter+;

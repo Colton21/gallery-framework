@@ -24,20 +24,35 @@ def process_file(_file):
     # my_proc.set_output_file("")
 
     use_opFilter = False
+    use_ccnc = True
     use_inFVFilter = True
     use_cosmic_ana = True
 
-    if(use_opFilter == False and use_cosmic_ana == False and use_inFVFilter == False):
+    if(use_opFilter == False and use_cosmic_ana == False and use_inFVFilter == False and use_ccnc == False):
         print 'No module was selected ... exiting'
         exit(1)
 
     opFilterModule = galleryfmwk.optFilter()
     opFilterModule.setTrackProducer("pandoraNuKHit")
+    opFilterModule.setPfpProducer("pandoraNu")
     opFilterModule.setShowerProducer("showerrecopandora")
     opFilterModule.setFlashProducer("simpleFlashBeam")
     opFilterModule.togglePlotting(True)
     opFilterModule.setPEThreshold(50)
+    # For BNB use 3 and 5
+    # For NuMI use 5 16 (5.03-16.75)
+    min_time = 5
+    max_time = 16
+    opFilterModule.setMinTime(min_time)
+    opFilterModule.setMaxTime(max_time)
     opFilterModule.setVerbose(False)
+
+    cosmicfilterModule = galleryfmwk.cosmic_filter()
+    cosmicfilterModule.setMCProducer("generator")
+    cosmicfilterModule.setWantCC(True)
+
+    if(use_opFilter == True):
+        print "Time Window: ", min_time, max_time
 
     inFVModule = galleryfmwk.inFV_filter()
     inFVModule.setPfpProducer("pandoraNu")
@@ -64,6 +79,8 @@ def process_file(_file):
     cosmicanaModule.setVerbose(False)
 
     # Attach an analysis unit ... here we use a base class which do
+    if(use_ccnc == True):
+        my_proc.add_process(cosmicfilterModule)
     if(use_opFilter == True):
         my_proc.add_process(opFilterModule)
     if(use_inFVFilter == True):

@@ -1,6 +1,8 @@
 #ifndef GALLERY_FMWK_COSMIC_ANA_CXX
 #define GALLERY_FMWK_COSMIC_ANA_CXX
 
+//plot some mc true info for the nues like their direction!
+
 #include "cosmic_ana.h"
 
 namespace galleryfmwk {
@@ -41,6 +43,7 @@ bool cosmic_ana::initialize() {
 	num_numu = 0;
 	cosmic_vertex_cut_pass = 0;
 	cosmic_vertex_shower_cut_pass = 0;
+	cosmic_vertex_shower_cut_event_pass = 0;
 
 	fv_cut_max = 50;
 
@@ -50,7 +53,6 @@ bool cosmic_ana::initialize() {
 
 
 bool cosmic_ana::analyze(gallery::Event * ev) {
-
 	num_cosmic++;
 
 	// For each file, loop over all events.
@@ -172,8 +174,8 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 						const double dir_x = shower.at(0)->Direction().X();
 						const double dir_y = shower.at(0)->Direction().Y();
 						const double dir_z = shower.at(0)->Direction().Z();
-						const double shwr_theta = TMath::ASin(dir_y) * (180/3.1415);
-						const double shwr_phi = TMath::ATan2(dir_x, dir_z) * (180/3.1415);
+						const double shwr_theta = TMath::ACos(dir_z) * (180/3.1415);
+						const double shwr_phi = TMath::ATan2(dir_y, dir_x) * (180/3.1415);
 						_h_manager_instance.h_shwr_direction_xy->Fill(dir_x, dir_y);
 						_h_manager_instance.h_shwr_direction_zy->Fill(dir_z, dir_y);
 						_h_manager_instance.h_shwr_theta_phi->Fill(shwr_theta, shwr_phi);
@@ -303,19 +305,21 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 			cosmic_track_for_pfp.get(num_cosmics, cosmic_track);
 			if(cosmic_track.size() == 0)
 			{
-				if(_verbose) {std::cout << "No track for pfp!" << std::endl; }
+				if(_verbose) {std::cout << "No track for cosmic pfp!" << std::endl; }
 				continue;
 			}
+			auto const this_cosmic_track = cosmic_track.at(0);
+
+			//let's construct the path of the tracks
 			std::vector<geoalgo::Point_t> cosmic_track_path;
-			int pts = 0;
-			for(auto this_point : cosmic_track)
+			const int cosmic_track_points = this_cosmic_track->NPoints();
+			for(int pts = 0; pts < cosmic_track_points; pts++)
 			{
 				geoalgo::Point_t const cosmic_track_point (
-				        this_point->LocationAtPoint(pts).X(),
-				        this_point->LocationAtPoint(pts).Y(),
-				        this_point->LocationAtPoint(pts).Z());
+				        this_cosmic_track->LocationAtPoint(pts).X(),
+				        this_cosmic_track->LocationAtPoint(pts).Y(),
+				        this_cosmic_track->LocationAtPoint(pts).Z());
 				cosmic_track_path.push_back(cosmic_track_point);
-				pts++;
 			}
 			const geoalgo::Trajectory_t trj = cosmic_track_path;
 			if(!cosmic_track_path.empty()) {cosmic_track_path.clear(); }
@@ -381,10 +385,14 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 		}
 	}
 	//closest point between **nue shwr vertex** and cosmic track
+
 	bool first = true;
 	int nE = 0;
+	if(shwr_energy_list.size() != shwr_dir_list.size()) {std::cout << "different size vectors" << std::endl; }
+
 	for (geoalgo::Point_t shwr_vertex : shwr_vertex_list)
 	{
+
 		if(!cosmic_track_trajectory_list.empty())
 		{
 			const double closest_point = _geo_algo_instance.SqDist(shwr_vertex, cosmic_track_trajectory_list);
@@ -395,36 +403,46 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 			_h_manager_instance.h_nue_shwr_cosmic_closest_vs_y_zoom->Fill(closest_point, shwr_vertex[1]);
 			_h_manager_instance.h_shwr_direction_y_vs_nearest_cosmic->Fill(closest_point, shwr_dir_list.at(nE).at(1));
 
+			if(!cosmic_track_length_list.empty())
+			{
+				double cylinder_vol = _utility_instance.utility::cylinder_fid_vol(
+				        cosmic_track_trajectory_list,
+				        cosmic_track_length_list,
+				        _geo_algo_instance,
+				        shwr_vertex,
+				        cut_distance_to_point
+				        );
+				_h_manager_instance.h_cylinder_vol->Fill(cylinder_vol/ub_total_vol);
+			}
+
 			//***********************************************************************
 			//let's see what happens if we remove nue shwr vtx close to tagged cosmic
 			//***********************************************************************
 			if(closest_point >= cut_distance_to_point)
 			{
+
 				cut_nue_shwr_vertex.push_back(shwr_vertex);
 				cosmic_vertex_shower_cut_pass++;
+
 				if(first == true)
 				{
 					first = false;
+					cosmic_vertex_shower_cut_event_pass++;
 					_h_manager_instance.h_nue_like_daughters_cuts->Fill(shwr_vertex_list.size(), track_trajectory_list.size());
 					_h_manager_instance.h_nue_like_daughters_cuts_logz->Fill(shwr_vertex_list.size(), track_trajectory_list.size());
+
 				}
 				_h_manager_instance.h_shwr_direction_cut_xy->Fill(shwr_dir_list.at(nE).at(0), shwr_dir_list.at(nE).at(1));
 				_h_manager_instance.h_shwr_direction_cut_zy->Fill(shwr_dir_list.at(nE).at(2), shwr_dir_list.at(nE).at(1));
-				const double shwr_cut_theta = TMath::ASin(shwr_dir_list.at(nE).at(1)) * (180/3.1415);
-				const double shwr_cut_phi   = TMath::ATan2(shwr_dir_list.at(nE).at(0), shwr_dir_list.at(nE).at(2)) * (180/3.1415);
+				const double shwr_cut_theta = TMath::ACos(shwr_dir_list.at(nE).at(2)) * (180/3.1415);
+				const double shwr_cut_phi   = TMath::ATan2(shwr_dir_list.at(nE).at(1), shwr_dir_list.at(nE).at(0)) * (180/3.1415);
 				_h_manager_instance.h_shwr_cut_theta_phi->Fill(shwr_cut_theta, shwr_cut_phi);
 			}
 			//let's loop over all of the nue shwrs and the cosmic tracks
 			//this will take the length to compute a cut out "fiducial" volume
-			double cylinder_vol = _utility_instance.cylinder_fid_vol(
-			        cosmic_track_trajectory_list,
-			        cosmic_track_length_list,
-			        _geo_algo_instance,
-			        shwr_vertex,
-			        cut_distance_to_point
-			        );
-			_h_manager_instance.h_cylinder_vol->Fill(cylinder_vol/ub_total_vol);
+			if(cosmic_track_length_list.empty()) {std::cout << "cosmic_track_length_list empty" << std::endl; }
 		}
+
 		//closest point between **nue shwr vertex** and nue track
 		if(!track_trajectory_list.empty())
 		{
@@ -449,8 +467,11 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 			const double this_closest_point_lrgDist = _geo_algo_instance.SqDist(shwr_vertex_lrgDist, track_trajectory_list);
 			_h_manager_instance.h_nue_like_shwr_lrgDist_dist_to_track->Fill(this_closest_point_lrgDist);
 
-			const double this_closest_point_cosmic_lrgDist = _geo_algo_instance.SqDist(shwr_vertex_lrgDist, cosmic_track_trajectory_list);
-			_h_manager_instance.h_nue_like_shwr_lrgDist_dist_to_cosmic->Fill(this_closest_point_cosmic_lrgDist);
+			if(!cosmic_track_trajectory_list.empty())
+			{
+				const double this_closest_point_cosmic_lrgDist = _geo_algo_instance.SqDist(shwr_vertex_lrgDist, cosmic_track_trajectory_list);
+				_h_manager_instance.h_nue_like_shwr_lrgDist_dist_to_cosmic->Fill(this_closest_point_cosmic_lrgDist);
+			}
 		}
 		const int num_trks_lrgDist = track_trajectory_list.size();
 		_h_manager_instance.h_nue_like_shwr_lrgDist_num_trks->Fill(num_trks_lrgDist);
@@ -466,7 +487,6 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 //*****************************
 // *End Geometry Calculations*
 //*****************************
-
 	return true;
 }
 
@@ -484,8 +504,10 @@ bool cosmic_ana::finalize() {
 	std::cout << "Number of primary pfps: " << num_primary_pfp << std::endl;
 	std::cout << "Number of nue-like: " << num_nue << std::endl;
 	std::cout << "Number of numu-like: " << num_numu << std::endl;
-	std::cout << "Nue-like Showers Remaining after a " << _cut << " cm cut: " << cosmic_vertex_shower_cut_pass << std::endl;
-	std::cout << "Nue-like Events  Remaining after a " << _cut << " cm cut: " << cosmic_vertex_cut_pass << std::endl;
+	std::cout << "Nue-like Showers Remaining after a " << _cut << " cm cut based on nue shwr vertex : " << cosmic_vertex_shower_cut_pass << std::endl;
+	std::cout << "Nue-like Events  Remaining after a " << _cut << " cm cut based on nue vertex      : " << cosmic_vertex_cut_pass << std::endl;
+	std::cout << "Nue-like Events  Remaining after a " << _cut << " cm cut based on nue shwr vertex : " << cosmic_vertex_shower_cut_event_pass << std::endl;
+
 
 	return true;
 }
