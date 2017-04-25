@@ -53,6 +53,7 @@ namespace galleryfmwk {
  */
 class cosmic_filter : galleryfmwk::ana_base {
 
+//class instances
 geoalgo::GeoAlgo const _geo_algo_instance;
 h_manager _h_manager_instance;
 utility _utility_instance;
@@ -133,8 +134,24 @@ double _back;
 double _front;
 bool wantCC;
 
+double x_boundary1;
+double x_boundary2;
+double y_boundary1;
+double y_boundary2;
+double z_boundary1;
+double z_boundary2;
+
 int num_events;
 int num_events_remaining;
+
+TH1D * h_nu_vtx_x;
+TH1D * h_nu_vtx_y;
+TH1D * h_nu_vtx_z;
+
+TH2D * h_nu_vtx_xy_outside;
+TH2D * h_nu_vtx_zy_outside;
+TH2D * h_nu_vtx_xy_inside;
+TH2D * h_nu_vtx_zy_inside;
 
 };
 

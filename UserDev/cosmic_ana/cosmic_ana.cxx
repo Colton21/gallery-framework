@@ -47,6 +47,8 @@ bool cosmic_ana::initialize() {
 
 	fv_cut_max = 50;
 
+	num_events = 0;
+	num_events_remaining = 0;
 
 	return true;
 }
@@ -191,6 +193,8 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 						_h_manager_instance.h_shwr_length->Fill(shwr_length);
 						const double end_width = _utility_instance.calc_end_width(shwr_length, open_angle);
 						_h_manager_instance.h_shwr_end_width->Fill(end_width);
+						//I expect them to be correlated, because width is calculated with length
+						_h_manager_instance.h_shwr_length_width->Fill(shwr_length, end_width);
 
 					}//end shwr daughters
 					 //start trk daughters
@@ -389,6 +393,26 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 	bool first = true;
 	int nE = 0;
 	if(shwr_energy_list.size() != shwr_dir_list.size()) {std::cout << "different size vectors" << std::endl; }
+	bool two_showers = false;
+	if(shwr_vertex_list.size() >= 2) {two_showers = true; }
+
+	//lets see the difference in distance between showers in the same event
+	if(two_showers == true)
+	{
+		double max_dist = 0;
+		for(int i = 0; i < shwr_vertex_list.size()-1; i++)
+		{
+			const geoalgo::Point_t vtx_i = shwr_vertex_list.at(i);
+			for(int j = i+1; j < shwr_vertex_list.size(); j++)
+			{
+				const geoalgo::Point_t vtx_j = shwr_vertex_list.at(j);
+				const double shwr_vtx_distance = _utility_instance.geo_distance(vtx_i[0], vtx_j[0], vtx_i[1], vtx_j[1], vtx_i[2], vtx_j[2]);
+				_h_manager_instance.h_nue_shwr_vtx_to_vtx_dist->Fill(shwr_vtx_distance);
+				if(shwr_vtx_distance > max_dist) {max_dist = shwr_vtx_distance; }
+			}
+		}
+		_h_manager_instance.h_nue_shwr_max_vtx_to_vtx_dist->Fill(max_dist);
+	}
 
 	for (geoalgo::Point_t shwr_vertex : shwr_vertex_list)
 	{
@@ -487,6 +511,58 @@ bool cosmic_ana::analyze(gallery::Event * ev) {
 //*****************************
 // *End Geometry Calculations*
 //*****************************
+
+//***************************************************************
+//shortly loop over the true particle info to look at true vertex
+//***************************************************************
+	// auto const & mctruth = ev->getValidHandle< std::vector < simb::MCTruth> > ("generator");
+	// auto const & mctrue(*mctruth);
+	//
+	// bool setWantCC = true;
+	//
+	// for(auto mct : mctrue)
+	// {
+	//      auto const mcnu = mct.GetNeutrino();
+	//      auto const mcpart = mcnu.Nu();
+	//
+	//      const double nu_vtx_x = mcpart.Vx();
+	//      const double nu_vtx_y = mcpart.Vy();
+	//      const double nu_vtx_z = mcpart.Vz();
+	//
+	//      _h_manager_instance.h_nu_vtx_x2->Fill(nu_vtx_x);
+	//      _h_manager_instance.h_nu_vtx_y2->Fill(nu_vtx_y);
+	//      _h_manager_instance.h_nu_vtx_z2->Fill(nu_vtx_z);
+	//
+	//      num_events++;
+	//      //if CC
+	//      if(mcnu.CCNC() == false)
+	//      {
+	//              if(setWantCC == true)
+	//              {
+	//                      num_events_remaining++;
+	//                      return true;
+	//              }
+	//              if(setWantCC == false)
+	//              {
+	//                      return false;
+	//              }
+	//      }
+	//      //if NC
+	//      if(mcnu.CCNC() == true)
+	//      {
+	//              if(setWantCC == true)
+	//              {
+	//                      return false;
+	//              }
+	//              if(setWantCC == false)
+	//              {
+	//                      return true;
+	//              }
+	//      }
+	// }//end loop mcnus
+	//
+
+
 	return true;
 }
 
@@ -507,6 +583,9 @@ bool cosmic_ana::finalize() {
 	std::cout << "Nue-like Showers Remaining after a " << _cut << " cm cut based on nue shwr vertex : " << cosmic_vertex_shower_cut_pass << std::endl;
 	std::cout << "Nue-like Events  Remaining after a " << _cut << " cm cut based on nue vertex      : " << cosmic_vertex_cut_pass << std::endl;
 	std::cout << "Nue-like Events  Remaining after a " << _cut << " cm cut based on nue shwr vertex : " << cosmic_vertex_shower_cut_event_pass << std::endl;
+
+	std::cout << "Number of true events:           " << num_events << std::endl;
+	std::cout << "Number of true events remaining: " << num_events_remaining << std::endl;
 
 
 	return true;

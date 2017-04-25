@@ -89,14 +89,22 @@ void h_manager::gen_histograms(TDirectory * dir) {
 	h_shwr_direction_cut_xy = new TH2D("h_shwr_direction_cut_xy", "h_shwr_direction_cut_xy", 100, -1, 1, 100, -1, 1);
 	h_shwr_direction_cut_zy = new TH2D("h_shwr_direction_cut_zy", "h_shwr_direction_cut_zy", 100, -1, 1, 100, -1, 1);
 	h_shwr_direction_y_vs_nearest_cosmic = new TH2D("h_shwr_direction_y_vs_nearest_cosmic", "h_shwr_direction_y_vs_nearest_cosmic", 30, 0, 120, 30, -1, 1);
-	h_shwr_theta_phi = new TH2D("h_shwr_theta_phi", "h_shwr_theta_phi", 60, -100, 100, 60, -190, 190);
-	h_shwr_cut_theta_phi = new TH2D("h_shwr_cut_theta_phi", "h_shwr_cut_theta_phi", 60, -100, 100, 60, -190, 190);
+	h_shwr_theta_phi = new TH2D("h_shwr_theta_phi", "h_shwr_theta_phi", 60, 0, 200, 60, -190, 190);
+	h_shwr_cut_theta_phi = new TH2D("h_shwr_cut_theta_phi", "h_shwr_cut_theta_phi", 60, 0, 200, 60, -190, 190);
 
 	h_shwr_length = new TH1D ("h_shwr_length", "h_shwr_length", 50, 0, 50);
 	h_shwr_end_width = new TH1D ("h_shwr_end_width", "h_shwr_end_width", 35, 0, 35);
 	h_shwr_open_angle = new TH1D ("h_shwr_open_angle", "h_shwr_open_angle", 60, 0, 180);
+	h_shwr_length_width = new TH2D ("h_shwr_length_width", "h_shwr_length_width", 50, 0, 50, 35, 0, 35);
 
 	h_nue_total_energy = new TH1D ("h_nue_total_energy", "h_nue_total_energy", 50, 0, 5);
+
+	h_nue_shwr_vtx_to_vtx_dist = new TH1D ("h_nue_shwr_vtx_to_vtx_dist", "h_nue_shwr_vtx_to_vtx_dist", 50, 0, 200);
+	h_nue_shwr_max_vtx_to_vtx_dist = new TH1D ("h_nue_shwr_max_vtx_to_vtx_dist", "h_nue_shwr_max_vtx_to_vtx_dist", 50, 0, 200);
+
+	h_nu_vtx_x2 = new TH1D ("h_nu_vtx_x2", "True Nu Vtx X", 50, -50, 300);
+	h_nu_vtx_y2 = new TH1D ("h_nu_vtx_y2", "True Nu Vtx Y", 50, -150, 150);
+	h_nu_vtx_z2 = new TH1D ("h_nu_vtx_z2", "True Nu Vtx Z", 50, -50, 1100);
 
 	c1 = new TCanvas();
 	c1b = new TCanvas();
@@ -150,7 +158,13 @@ void h_manager::gen_histograms(TDirectory * dir) {
 	c28a = new TCanvas();
 	c28b = new TCanvas();
 	c28c = new TCanvas();
+	c28d = new TCanvas();
 	c29 = new TCanvas();
+	c31a = new TCanvas();
+	c31b = new TCanvas();
+	c32a = new TCanvas();
+	c32b = new TCanvas();
+	c32c = new TCanvas();
 
 	h_numu_like_vtx_xy->Fill(1, 1);
 
@@ -481,12 +495,44 @@ void h_manager::draw_save()
 	h_shwr_end_width->GetYaxis()->SetTitle("Events");
 	h_shwr_end_width->GetXaxis()->SetTitle("Shower End Width [cm]");
 	c28c->Print("nue-like_shwr_end_width.pdf");
+	c28d->cd();
+	h_shwr_length_width->Draw("colz");
+	h_shwr_length_width->GetXaxis()->SetTitle();
+	h_shwr_length_width->GetYaxis()->SetTitle();
+	c28d->Print("nue-like_shwr_length_width.pdf");
 
 	c29->cd();
 	h_nue_total_energy->Draw();
 	h_nue_total_energy->GetYaxis()->SetTitle("Events");
 	h_nue_total_energy->GetXaxis()->SetTitle("Summed Energy (track + shower) [GeV]");
 	c29->Print("nue-like_total_energy.pdf");
+
+	c31a->cd();
+	h_nue_shwr_vtx_to_vtx_dist->Draw();
+	h_nue_shwr_vtx_to_vtx_dist->GetXaxis()->SetTitle("Shower to Shower Distance [cm]");
+	h_nue_shwr_vtx_to_vtx_dist->GetYaxis()->SetTitle("Counts");
+	c31a->Print("nue-like_shower_vtx_to_vtx.pdf");
+	c31b->cd();
+	h_nue_shwr_max_vtx_to_vtx_dist->Draw();
+	h_nue_shwr_max_vtx_to_vtx_dist->GetXaxis()->SetTitle("Max Shower to Shower Distance [cm]");
+	h_nue_shwr_max_vtx_to_vtx_dist->GetYaxis()->SetTitle("Counts");
+	c31b->Print("nue-like_shower_max_vtx_to_vtx.pdf");
+
+	c32a->cd();
+	h_nu_vtx_x2->Draw();
+	h_nu_vtx_x2->GetXaxis()->SetTitle("X Vertex [cm]");
+	h_nu_vtx_x2->GetYaxis()->SetTitle("Counts");
+	c32a->Print("true_post_nu_vtx_x2.pdf");
+	c32b->cd();
+	h_nu_vtx_y2->Draw();
+	h_nu_vtx_y2->GetXaxis()->SetTitle("Y Vertex [cm]");
+	h_nu_vtx_y2->GetYaxis()->SetTitle("Counts");
+	c32b->Print("true_post_nu_vtx_y2.pdf");
+	c32c->cd();
+	h_nu_vtx_z2->Draw();
+	h_nu_vtx_z2->GetXaxis()->SetTitle("Z Vertex [cm]");
+	h_nu_vtx_z2->GetYaxis()->SetTitle("Counts");
+	c32c->Print("true_post_nu_vtx_z2.pdf");
 
 
 	std::cout << "Finished Saving Histograms" << std::endl;

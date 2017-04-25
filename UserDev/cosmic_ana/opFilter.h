@@ -94,6 +94,13 @@ void setVerbose(bool b){
 	_verbose = b;
 }
 
+void flashCenterCut(bool b){
+	_flash_center_cut = b;
+}
+void flashCenterCutDistance(double d){
+	_flash_center_cut_distance = d;
+}
+
 protected:
 
 bool _threshold_plotting;
@@ -104,6 +111,8 @@ std::string _flash_producer;
 double _pe_threshold;
 double _min_time;
 double _max_time;
+bool _flash_center_cut;
+double _flash_center_cut_distance;
 
 double x_boundary1;
 double x_boundary2;
@@ -119,6 +128,7 @@ bool _verbose;
 
 int flash_pass_counter;
 int total_flash_counter;
+int flash_center_cut_counter;
 
 TH2D * h_flash_zywidth;
 TH2D * h_flash_zycenter;

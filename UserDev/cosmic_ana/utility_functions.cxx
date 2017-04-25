@@ -6,16 +6,16 @@ bool utility::inFV(double x_vtx, double y_vtx, double z_vtx,
 {
 	//is vertex in given FV?
 
-	if(x_vtx > x2 &&
-	   x_vtx < x1 &&
-	   y_vtx > y2 &&
-	   y_vtx < y1 &&
-	   z_vtx > z1 &&
-	   z_vtx < z2)
+	if(x_vtx < x2 ||
+	   x_vtx > x1 ||
+	   y_vtx < y2 ||
+	   y_vtx > y1 ||
+	   z_vtx < z1 ||
+	   z_vtx > z2)
 	{
-		return true;
+		return false;
 	}
-	return false;
+	return true;
 }
 
 //calculates lost fiducial volume as a result of the closest cosmic track to a shower vertex

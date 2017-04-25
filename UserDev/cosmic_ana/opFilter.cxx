@@ -28,6 +28,7 @@ bool optFilter::initialize() {
 
 	flash_pass_counter = 0;
 	total_flash_counter = 0;
+	flash_center_cut_counter = 0;
 
 	TH1D::AddDirectory(kFALSE);
 
@@ -69,6 +70,8 @@ bool optFilter::analyze(gallery::Event * ev) {
 	double min_time(_min_time);
 	double max_time(_max_time);
 	bool threshold_plotting(_threshold_plotting);
+	bool flash_center_cut(_flash_center_cut);
+	double flash_center_cut_distance(_flash_center_cut_distance);
 
 	auto const & pfp
 	        = ev->getValidHandle<std::vector <recob::PFParticle> > (pfp_tag);
@@ -102,6 +105,7 @@ bool optFilter::analyze(gallery::Event * ev) {
 	}
 
 	double largestPE = 0;
+	bool this_event_flash = false;
 	recob::OpFlash this_flash;
 	for(auto opflsh : opflashes)
 	{
@@ -109,7 +113,7 @@ bool optFilter::analyze(gallery::Event * ev) {
 		{
 			if(opflsh.TotalPE() >= pe_threshold)
 			{
-				flash_pass_counter++;
+				if(this_event_flash == false) {this_event_flash = true; }
 
 				h_flash_zycenter->Fill(opflsh.ZCenter(), opflsh.YCenter());
 				h_flash_zywidth->Fill(opflsh.ZWidth(), opflsh.YWidth());
@@ -163,6 +167,22 @@ bool optFilter::analyze(gallery::Event * ev) {
 							h_nue_shwr_vtx_flash_dist_zy->Fill(zy_dist);
 							h_nue_shwr_vtx_flash_width_zy->Fill(this_flash.ZWidth() - (d_xyz[2] - this_flash.ZCenter()), this_flash.YWidth() - (d_xyz[1] - this_flash.YCenter()));
 
+							//cut on the distance from the center of the largest flash
+							//to the reconstructed shower vertex
+							//a guess from the plots is that ~100 cm should be good
+							if(flash_center_cut == true)
+							{
+								if(zy_dist >= flash_center_cut_distance)
+								{
+									if(_verbose)
+									{
+										std::cout << "Shower vertex too far from flash center" << std::endl;
+									}
+									flash_center_cut_counter++;
+									return false;
+								}
+							}
+
 
 							// //let's get the shower associations
 							// std::vector<recob::Shower const*> shower;
@@ -178,6 +198,7 @@ bool optFilter::analyze(gallery::Event * ev) {
 			}//end if primary
 		}//end looping pfp
 
+		flash_pass_counter++;
 		return true;
 	}
 	else{return false; }
@@ -193,6 +214,8 @@ bool optFilter::finalize() {
 	// Say you made a histogram pointer h1 to store. You can do this:
 	//
 	// if (_fout) { _fout->cd(); _tree->Write(); }
+
+	bool flash_center_cut(_flash_center_cut);
 
 	TCanvas * c1a = new TCanvas();
 	c1a->cd();
@@ -242,8 +265,10 @@ bool optFilter::finalize() {
 	h_nue_shwr_vtx_flash_width_zy->GetYaxis()->SetTitle("Y Flash Width - Vertex Dist [cm]");
 	c3d->Print("nue-like_shwr_vtx_flashCenter_width.pdf");
 
-	std::cout << "Total Events: " << total_flash_counter << std::endl;
-	std::cout << "Remaining Events: " << flash_pass_counter << std::endl;
+	std::cout << "Total Events     (OpFilter):     " << total_flash_counter << std::endl;
+	if(flash_center_cut == false) {std::cout << "No cut on flash center to vtx" << std::endl; }
+	if(flash_center_cut == true) {std::cout << "Events Cut: flash center to vtx: " << flash_center_cut_counter << std::endl; }
+	std::cout << "Remaining Events (OpFilter):     " << flash_pass_counter << std::endl;
 
 	return true;
 }

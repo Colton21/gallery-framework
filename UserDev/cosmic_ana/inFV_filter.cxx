@@ -134,7 +134,7 @@ bool inFV_filter::analyze(gallery::Event * ev) {
 					double d_xyz [3];
 					d_vertex.at(0)->XYZ(d_xyz);
 					//check if daughter vertex is inFV
-					if(_utility_instance.inFV(d_xyz[0], d_xyz[1], d_xyz[2],x_boundary2, x_boundary1, y_boundary2, y_boundary1, z_boundary1, z_boundary2) == false) {return false; }
+					if(_utility_instance.inFV(d_xyz[0], d_xyz[1], d_xyz[2], x_boundary2, x_boundary1, y_boundary2, y_boundary1, z_boundary1, z_boundary2) == false) {return false; }
 
 					//shwr daughters
 					if(daughter.PdgCode() == 11)
@@ -300,8 +300,8 @@ bool inFV_filter::analyze(gallery::Event * ev) {
 bool inFV_filter::finalize() {
 
 	std::cout << "Finished inFV Filter" << std::endl;
-	std::cout << "Number of events:           " << num_events << std::endl;
-	std::cout << "Number of events remaining: " << num_events_remaining << std::endl;
+	std::cout << "Number of events reco inFV:       " << num_events << std::endl;
+	std::cout << "Number of events after reco inFV: " << num_events_remaining << std::endl;
 
 	_h_manager_instance.draw_save_fv();
 
